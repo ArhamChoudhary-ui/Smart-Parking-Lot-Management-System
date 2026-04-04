@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Parking Lot Management System</title>
-    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <!-- Navigation Toolbar -->
@@ -20,10 +19,32 @@
           <button class="nav-btn" data-screen="transactions">
             📋 Transactions
           </button>
+          <button class="nav-btn" data-screen="admin" id="admin-btn" onclick="openAdminModal()">
+            🔐 Admin
+          </button>
         </div>
         <div class="clock" id="clock">00:00:00<br />Monday</div>
       </div>
     </nav>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeAdminModal()">&times;</span>
+        <h2>Admin Login</h2>
+        <div class="login-form">
+          <div class="form-field">
+            <label for="admin-password">Enter Admin Password:</label>
+            <input type="password" id="admin-password" placeholder="Enter password" />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-success" onclick="adminLogin()">Login</button>
+            <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
+          </div>
+          <div id="login-error" class="status-message"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Main Container -->
     <div class="container">
@@ -53,6 +74,14 @@
               </div>
               <span class="rate-label" id="occupancy-percent">43%</span>
             </div>
+          </div>
+          <div class="form-actions" style="margin-top: 20px;">
+            <button class="btn btn-danger" onclick="confirmSystemReset()">
+              🗑️ Reset All Data
+            </button>
+            <button class="btn btn-primary" onclick="openAdminModal()">
+              🔐 Admin Login
+            </button>
           </div>
         </div>
 
@@ -92,6 +121,18 @@
               <label>💰 Total Revenue:</label>
               <span class="revenue-value" id="total-revenue">₹0.00</span>
             </div>
+          </div>
+        </div>
+
+        <div class="group parking-visual-group">
+          <h2>Parking Slot Illustration</h2>
+          <p class="parking-visual-note">
+            Green means available, red means occupied. All 30 slots are shown below.
+          </p>
+          <div id="parking-lot-visual" class="parking-lot-visual" aria-label="Parking lot visual map"></div>
+          <div class="parking-legend">
+            <span><span class="legend-dot available"></span> Available</span>
+            <span><span class="legend-dot occupied"></span> Occupied</span>
           </div>
         </div>
       </div>
@@ -472,8 +513,104 @@
           </table>
         </div>
       </div>
+
+      <!-- Admin Screen -->
+      <div id="admin" class="screen">
+        <h1>🔐 Admin Panel</h1>
+        <div id="admin-not-logged" class="admin-login-prompt">
+          <p>Access restricted. <button class="btn btn-primary" onclick="openAdminModal()">Login as Admin</button></p>
+        </div>
+
+        <div id="admin-logged" class="admin-content" style="display:none;">
+          <div class="group">
+            <h2>Welcome, Admin</h2>
+            <p>Manage the parking system with advanced controls.</p>
+            <div class="form-actions">
+              <button class="btn btn-secondary" onclick="adminLogout()">🚪 Logout</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2>System Statistics</h2>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <label>Total Transactions:</label>
+                <span class="stat-value" id="admin-total-txn">0</span>
+              </div>
+              <div class="stat-item">
+                <label>Total Revenue:</label>
+                <span class="stat-value" id="admin-total-revenue">₹0.00</span>
+              </div>
+              <div class="stat-item">
+                <label>Peak Hour:</label>
+                <span class="stat-value" id="admin-peak-hour">N/A</span>
+              </div>
+              <div class="stat-item">
+                <label>Vehicles Parked Today:</label>
+                <span class="stat-value" id="admin-vehicles-today">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2>🛠️ System Management</h2>
+            <div class="admin-controls">
+              <div class="control-item">
+                <h3>📊 View All Vehicles</h3>
+                <p>Display all currently parked vehicles with details.</p>
+                <button class="btn btn-primary" onclick="viewAllVehicles()">View Vehicles</button>
+              </div>
+              <div class="control-item">
+                <h3>🔍 Search Vehicle</h3>
+                <div class="form-field">
+                  <input type="text" id="search-vehicle" placeholder="Enter vehicle registration number" />
+                  <button class="btn btn-primary" onclick="searchVehicle()">Search</button>
+                </div>
+                <div id="search-result" style="margin-top:10px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group danger-zone">
+            <h2>⚠️ Danger Zone</h2>
+            <div class="danger-controls">
+              <div class="control-item">
+                <h3>🚨 Clear Single Vehicle</h3>
+                <p>Remove a specific vehicle from the system.</p>
+                <div class="form-field">
+                  <input type="number" id="remove-spot-id" placeholder="Enter Spot ID" min="1" max="30" />
+                  <button class="btn btn-danger" onclick="removeVehicle()">Remove Vehicle</button>
+                </div>
+                <div id="remove-status" style="margin-top:10px;"></div>
+              </div>
+              <div class="control-item">
+                <h3>🗑️ Clear All Data</h3>
+                <p>Reset the entire system - clears all vehicles and transactions.</p>
+                <button class="btn btn-danger" onclick="confirmSystemReset()">Reset All Data</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2>📋 Transaction Audit</h2>
+            <div class="audit-controls">
+              <label for="audit-filter">Filter by type:</label>
+              <select id="audit-filter">
+                <option value="all">All Transactions</option>
+                <option value="entry">Entry Only</option>
+                <option value="exit">Exit Only</option>
+              </select>
+              <button class="btn btn-primary" onclick="generateAuditReport()">Generate Report</button>
+              <button class="btn btn-primary" onclick="exportAuditCSV()">📥 Export to CSV</button>
+            </div>
+            <div id="audit-report" style="margin-top:15px; padding:10px; background:#f0f2f5; border-radius:5px; max-height:300px; overflow-y:auto;">
+              No report generated yet.
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

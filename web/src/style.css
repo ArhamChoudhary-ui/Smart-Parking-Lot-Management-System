@@ -283,6 +283,94 @@ h3 {
   color: #16a085;
 }
 
+/* Parking Visual Map */
+.parking-visual-group {
+  overflow: hidden;
+}
+
+.parking-visual-note {
+  margin-bottom: 15px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.parking-lot-visual {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 14px;
+}
+
+.parking-slot {
+  border-radius: 12px;
+  padding: 14px 10px;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: var(--transition);
+}
+
+.parking-slot:hover {
+  transform: translateY(-3px);
+}
+
+.parking-slot.available {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.parking-slot.occupied {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.slot-id {
+  font-size: 16px;
+}
+
+.slot-type {
+  font-size: 20px;
+}
+
+.slot-status {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.parking-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.parking-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.available {
+  background: var(--success-green);
+}
+
+.legend-dot.occupied {
+  background: var(--danger-red);
+}
+
 /* Forms */
 .form-row {
   display: grid;
@@ -683,4 +771,188 @@ h3 {
   .screen.active {
     page-break-after: always;
   }
+}
+
+/* Admin Portal Styles */
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-content {
+  background-color: var(--bg-white);
+  margin: 10% auto;
+  padding: 30px;
+  border: 2px solid var(--primary-blue);
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+  color: var(--dark-gray);
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--danger-red);
+}
+
+.login-form .form-field {
+  margin-bottom: 15px;
+}
+
+.login-form .form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.login-form .form-field input {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--border-light);
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.login-form .form-field input:focus {
+  border-color: var(--primary-blue);
+  outline: none;
+}
+
+.login-form .form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Admin Panel Styles */
+.admin-login-prompt {
+  text-align: center;
+  padding: 40px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  border: 2px dashed var(--danger-red);
+}
+
+.admin-login-prompt p {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: var(--dark-gray);
+}
+
+.admin-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.control-item {
+  background: var(--bg-light);
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid var(--primary-blue);
+}
+
+.control-item h3 {
+  margin: 0 0 10px 0;
+  color: var(--dark-gray);
+}
+
+.control-item p {
+  margin: 10px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.control-item .form-field {
+  margin: 15px 0;
+}
+
+.danger-zone {
+  border-color: var(--danger-red) !important;
+}
+
+.danger-zone h2 {
+  color: var(--danger-red);
+}
+
+.danger-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.danger-controls .control-item {
+  border-color: var(--danger-red) !important;
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.danger-controls .control-item h3 {
+  color: var(--danger-red);
+}
+
+.btn-danger {
+  background-color: var(--danger-red);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: var(--transition);
+}
+
+.btn-danger:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.audit-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.audit-controls label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.audit-controls select {
+  padding: 8px 12px;
+  border: 2px solid var(--border-light);
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.audit-controls .btn {
+  margin: 5px;
+}
+
+#audit-report {
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }

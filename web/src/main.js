@@ -1,5 +1,7 @@
 // Smart Parking Lot Management System - Browser implementation
 
+import "./style.css";
+
 const PRICING = {
   standard: 20,
   disabled: 10,
@@ -23,6 +25,7 @@ function initSystem() {
   initializeSpots();
   bindNavigation();
   bindInputs();
+  bindAdminModal();
   seedInitialVehicles();
   updateAllViews();
   updateClock();
@@ -99,6 +102,25 @@ function bindInputs() {
   }
 }
 
+function bindAdminModal() {
+  const modal = document.getElementById("admin-modal");
+  if (!modal) return;
+
+  // Close modal when clicking outside
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeAdminModal();
+    }
+  });
+
+  // Close modal when pressing Escape
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal.classList.contains("show")) {
+      closeAdminModal();
+    }
+  });
+}
+
 function showScreen(screenId) {
   document.querySelectorAll(".screen").forEach((screen) => {
     screen.classList.remove("active");
@@ -118,6 +140,13 @@ function showScreen(screenId) {
   }
   if (screenId === "transactions") {
     renderTransactions();
+  }
+  if (screenId === "admin") {
+    if (adminLoggedIn) {
+      showAdminPanel();
+    } else {
+      showAdminNotLogged();
+    }
   }
 }
 
@@ -326,6 +355,7 @@ function clearExitForm() {
 function updateAllViews() {
   updateDashboard();
   updateStatusCards();
+  renderParkingVisual();
   renderSpotsTable();
   renderTransactions();
   updateFeePreview();
@@ -399,6 +429,30 @@ function renderSpotsTable() {
       <td>${spot.allottedHours ?? "-"}</td>
     `;
     body.appendChild(tr);
+  });
+}
+
+function renderParkingVisual() {
+  const container = document.getElementById("parking-lot-visual");
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  state.spots.forEach((spot) => {
+    const slot = document.createElement("div");
+    slot.className = `parking-slot ${spot.occupied ? "occupied" : "available"}`;
+    slot.innerHTML = `
+      <span class="slot-id">${spot.id}</span>
+      <span class="slot-type">${spotTypeIcon(spot.type)}</span>
+      <span class="slot-status">${spot.occupied ? "Occupied" : "Available"}</span>
+    `;
+    slot.title =
+      spot.occupied ?
+        `Spot ${spot.id}: ${spot.vehicleNo} (${titleCase(spot.type)})`
+      : `Spot ${spot.id}: Available (${titleCase(spot.type)})`;
+    container.appendChild(slot);
   });
 }
 
@@ -597,6 +651,330 @@ function clearStatus(id) {
   el.classList.remove("success", "error");
 }
 
+// ==================== ADMIN PORTAL FUNCTIONS ====================
+
+const ADMIN_PASSWORD = "admin123"; // Simple password - change in production
+let adminLoggedIn = false;
+
+function openAdminModal() {
+  const modal = document.getElementById("admin-modal");
+  if (modal) {
+    modal.classList.add("show");
+    document.getElementById("admin-password").value = "";
+    document.getElementById("login-error").textContent = "";
+  }
+}
+
+function closeAdminModal() {
+  const modal = document.getElementById("admin-modal");
+  if (modal) {
+    modal.classList.remove("show");
+    document.getElementById("admin-password").value = "";
+    document.getElementById("login-error").textContent = "";
+  }
+}
+
+function adminLogin() {
+  const password = document.getElementById("admin-password").value;
+  const errorEl = document.getElementById("login-error");
+
+  if (!password) {
+    setStatus("login-error", "Please enter a password", "error");
+    return;
+  }
+
+  if (password === ADMIN_PASSWORD) {
+    adminLoggedIn = true;
+    closeAdminModal();
+    showAdminPanel();
+    setStatus("login-error", "Login successful!", "success");
+    setTimeout(() => {
+      document.getElementById("login-error").textContent = "";
+    }, 2000);
+    showScreen("admin");
+  } else {
+    setStatus("login-error", "Invalid password. Try again.", "error");
+  }
+}
+
+function adminLogout() {
+  adminLoggedIn = false;
+  showAdminNotLogged();
+  setStatus("admin-not-logged", "You have been logged out.", "success");
+  setTimeout(() => {
+    showScreen("dashboard");
+  }, 1500);
+}
+
+function showAdminPanel() {
+  const notLogged = document.getElementById("admin-not-logged");
+  const logged = document.getElementById("admin-logged");
+
+  if (notLogged) notLogged.style.display = "none";
+  if (logged) logged.style.display = "block";
+
+  updateAdminStats();
+}
+
+function showAdminNotLogged() {
+  const notLogged = document.getElementById("admin-not-logged");
+  const logged = document.getElementById("admin-logged");
+
+  if (notLogged) notLogged.style.display = "block";
+  if (logged) logged.style.display = "none";
+}
+
+function updateAdminStats() {
+  const totalTxn = state.transactions.length;
+  const totalRev = state.totalRevenue;
+  const vehiclesCount = state.spots.filter((s) => s.occupied).length;
+
+  setText("admin-total-txn", totalTxn);
+  setText("admin-total-revenue", formatINR(totalRev));
+  setText("admin-vehicles-today", vehiclesCount);
+  setText("admin-peak-hour", "10:00 AM - 12:00 PM");
+}
+
+function viewAllVehicles() {
+  const vehicles = state.spots.filter((s) => s.occupied);
+
+  if (vehicles.length === 0) {
+    alert("No vehicles currently parked.");
+    return;
+  }
+
+  let vehicleList = "=== Currently Parked Vehicles ===\n\n";
+  vehicles.forEach((v) => {
+    vehicleList += `Spot ${v.id} (${titleCase(v.type)}): ${v.vehicleNo} (${v.category}, ${v.allottedHours}h)\n`;
+  });
+
+  alert(vehicleList);
+}
+
+function searchVehicle() {
+  const searchInput = document
+    .getElementById("search-vehicle")
+    .value.trim()
+    .toLowerCase();
+  const resultEl = document.getElementById("search-result");
+
+  if (!searchInput) {
+    resultEl.textContent = "Enter a vehicle number to search.";
+    return;
+  }
+
+  const found = state.spots.find(
+    (s) => s.occupied && String(s.vehicleNo).toLowerCase() === searchInput,
+  );
+
+  if (found) {
+    resultEl.innerHTML = `
+      <div style="padding:10px; background:#d4edda; border:2px solid #28a745; border-radius:5px;">
+        <strong>✓ Vehicle Found!</strong><br>
+        Spot ID: ${found.id} (${titleCase(found.type)})<br>
+        Vehicle: ${found.vehicleNo}<br>
+        Category: ${found.category}<br>
+        Allotted: ${found.allottedHours} hours
+      </div>
+    `;
+  } else {
+    resultEl.innerHTML = `
+      <div style="padding:10px; background:#f8d7da; border:2px solid #dc3545; border-radius:5px;">
+        <strong>✗ Vehicle Not Found</strong><br>
+        No vehicle with number "${searchInput}" is currently parked.
+      </div>
+    `;
+  }
+}
+
+function removeVehicle() {
+  if (!adminLoggedIn) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const spotId = Number(document.getElementById("remove-spot-id").value);
+  const statusEl = document.getElementById("remove-status");
+
+  if (!spotId || spotId < 1 || spotId > state.spots.length) {
+    setStatus("remove-status", "Enter a valid spot ID (1-30).", "error");
+    return;
+  }
+
+  const spot = state.spots[spotId - 1];
+
+  if (!spot.occupied) {
+    setStatus("remove-status", `Spot ${spotId} is already empty.`, "error");
+    return;
+  }
+
+  const vehicleNo = spot.vehicleNo;
+  freeSpot(spot);
+  addTransaction({
+    type: "admin-remove",
+    spotId,
+    vehicleNo,
+    category: spot.category,
+    duration: 0,
+    amount: 0,
+  });
+
+  updateAdminStats();
+  updateAllViews();
+
+  setStatus(
+    "remove-status",
+    `✓ Vehicle ${vehicleNo} removed from Spot ${spotId}.`,
+    "success",
+  );
+  document.getElementById("remove-spot-id").value = "";
+
+  setTimeout(() => {
+    statusEl.textContent = "";
+  }, 3000);
+}
+
+function confirmSystemReset() {
+  if (!adminLoggedIn) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const confirmed = confirm(
+    "⚠️ WARNING: This will clear ALL vehicles and transactions!\n\nAre you sure you want to reset the entire system?\n\nClick OK to confirm, Cancel to abort.",
+  );
+
+  if (confirmed) {
+    const confirmed2 = confirm(
+      "This is your FINAL WARNING.\n\nAll data will be permanently deleted.\n\nProceed?",
+    );
+
+    if (confirmed2) {
+      resetSystem();
+    }
+  }
+}
+
+function resetSystem() {
+  // Clear all vehicles
+  state.spots.forEach((spot) => {
+    freeSpot(spot);
+  });
+
+  // Clear transactions
+  state.transactions = [];
+  state.totalRevenue = 0;
+
+  // Reset transaction counter
+  state.nextTxnId = 1;
+
+  updateAdminStats();
+  updateAllViews();
+
+  alert(
+    "✓ System has been completely reset!\n\nAll vehicles and transactions have been cleared.",
+  );
+  showScreen("dashboard");
+}
+
+function generateAuditReport() {
+  if (!adminLoggedIn) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const filterType = document.getElementById("audit-filter").value;
+  const reportEl = document.getElementById("audit-report");
+
+  const filtered =
+    filterType === "all" ?
+      state.transactions
+    : state.transactions.filter((t) => t.type === filterType);
+
+  if (filtered.length === 0) {
+    reportEl.textContent = "No transactions found for the selected filter.";
+    return;
+  }
+
+  let report = "=== AUDIT REPORT ===\n";
+  report += `Generated: ${new Date().toLocaleString("en-IN")}\n`;
+  report += `Filter: ${filterType.toUpperCase()}\n`;
+  report += `Total Records: ${filtered.length}\n`;
+  report += `\n${"─".repeat(80)}\n\n`;
+
+  filtered.forEach((txn, index) => {
+    report += `[${index + 1}] ${txn.timestamp}\n`;
+    report += `    Type: ${txn.type.toUpperCase()}\n`;
+    report += `    Spot ID: ${txn.spotId}\n`;
+    report += `    Vehicle: ${txn.vehicleNo}\n`;
+    report += `    Category: ${txn.category || "N/A"}\n`;
+    report += `    Amount: ${formatINR(txn.amount || 0)}\n`;
+    report += `\n`;
+  });
+
+  report += `${"─".repeat(80)}\n`;
+  report += `Total Revenue: ${formatINR(
+    filtered.reduce((sum, t) => sum + (t.amount || 0), 0),
+  )}\n`;
+
+  reportEl.textContent = report;
+}
+
+function exportAuditCSV() {
+  if (!adminLoggedIn) {
+    alert("Admin access required.");
+    return;
+  }
+
+  const filterType = document.getElementById("audit-filter").value;
+  const filtered =
+    filterType === "all" ?
+      state.transactions
+    : state.transactions.filter((t) => t.type === filterType);
+
+  if (filtered.length === 0) {
+    alert("No transactions to export.");
+    return;
+  }
+
+  const headers = [
+    "Timestamp",
+    "Type",
+    "SpotID",
+    "VehicleNumber",
+    "VehicleCategory",
+    "Duration",
+    "Amount",
+  ];
+
+  const csvRows = [headers.join(",")];
+  filtered.forEach((txn) => {
+    csvRows.push(
+      [
+        txn.timestamp,
+        txn.type,
+        txn.spotId,
+        txn.vehicleNo,
+        txn.category || "",
+        txn.duration ?? "",
+        txn.amount ?? 0,
+      ]
+        .map((v) => `"${String(v).replaceAll('"', '""')}"`)
+        .join(","),
+    );
+  });
+
+  const blob = new Blob([csvRows.join("\n")], {
+    type: "text/csv;charset=utf-8;",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `admin-audit-${new Date().toISOString().split("T")[0]}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 window.parkVehicle = parkVehicle;
 window.clearParkForm = clearParkForm;
 window.calculateFee = calculateFee;
@@ -605,5 +983,15 @@ window.clearExitForm = clearExitForm;
 window.filterTransactions = filterTransactions;
 window.exportTransactions = exportTransactions;
 window.showScreen = showScreen;
+window.openAdminModal = openAdminModal;
+window.closeAdminModal = closeAdminModal;
+window.adminLogin = adminLogin;
+window.adminLogout = adminLogout;
+window.viewAllVehicles = viewAllVehicles;
+window.searchVehicle = searchVehicle;
+window.removeVehicle = removeVehicle;
+window.confirmSystemReset = confirmSystemReset;
+window.generateAuditReport = generateAuditReport;
+window.exportAuditCSV = exportAuditCSV;
 
 document.addEventListener("DOMContentLoaded", initSystem);
