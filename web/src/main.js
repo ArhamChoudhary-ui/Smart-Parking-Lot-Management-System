@@ -26,7 +26,6 @@ function initSystem() {
   bindNavigation();
   bindInputs();
   bindAdminModal();
-  seedInitialVehicles();
   updateAllViews();
   updateClock();
   setInterval(updateClock, 1000);
@@ -47,31 +46,6 @@ function initializeSpots() {
       });
       id += 1;
     }
-  });
-}
-
-function seedInitialVehicles() {
-  const sample = [
-    { no: "MH-02-AB-1234", type: "standard", category: "4W", hours: 2 },
-    { no: "KA-03-CD-9876", type: "disabled", category: "4W", hours: 3 },
-    { no: "DL-01-XY-5678", type: "standard", category: "2W", hours: 1 },
-    { no: "TN-04-EF-2345", type: "vip", category: "4W", hours: 2 },
-  ];
-
-  sample.forEach((vehicle) => {
-    const spot = findAvailableSpot(vehicle.type);
-    if (!spot) {
-      return;
-    }
-    occupySpot(spot, vehicle.no, vehicle.category, vehicle.hours);
-    addTransaction({
-      type: "entry",
-      spotId: spot.id,
-      vehicleNo: vehicle.no,
-      category: vehicle.category,
-      duration: vehicle.hours,
-      amount: 0,
-    });
   });
 }
 
@@ -469,6 +443,14 @@ function renderTransactions() {
     : state.transactions.filter((t) => t.type === filter);
 
   body.innerHTML = "";
+  if (rows.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="7" class="text-center">No transactions yet.</td>`;
+    body.appendChild(tr);
+    updateTransactionSummary(rows);
+    return;
+  }
+
   rows
     .slice()
     .reverse()
@@ -493,6 +475,7 @@ function updateTransactionSummary(rows) {
   const total = rows.length;
   const revenue = rows.reduce((sum, row) => sum + (row.amount || 0), 0);
   const avg = total ? revenue / total : 0;
+  const peakHours = total ? "10:00 AM - 12:00 PM" : "N/A";
   const summary = document.querySelector(".summary-info");
   if (!summary) {
     return;
@@ -501,7 +484,7 @@ function updateTransactionSummary(rows) {
     `Total Transactions: <strong>${total}</strong> | ` +
     `Total Revenue: <strong>${formatINR(revenue)}</strong> | ` +
     `Average Transaction: <strong>${formatINR(avg)}</strong> | ` +
-    `Peak Hours: <strong>10:00 AM - 12:00 PM</strong>`;
+    `Peak Hours: <strong>${peakHours}</strong>`;
 }
 
 function filterTransactions() {
