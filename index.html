@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Parking Lot Management System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Navigation Toolbar -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-buttons">
+          <button class="nav-btn active" data-screen="dashboard">
+            📊 Dashboard
+          </button>
+          <button class="nav-btn" data-screen="park">🚗 Park Vehicle</button>
+          <button class="nav-btn" data-screen="exit">🚙 Vehicle Exit</button>
+          <button class="nav-btn" data-screen="status">📍 Lot Status</button>
+          <button class="nav-btn" data-screen="transactions">
+            📋 Transactions
+          </button>
+        </div>
+        <div class="clock" id="clock">00:00:00<br />Monday</div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Dashboard Screen -->
+      <div id="dashboard" class="screen active">
+        <h1>Dashboard</h1>
+
+        <div class="group">
+          <h2>Overall Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <label>Total Spots:</label>
+              <span class="stat-value" id="total-spots">30</span>
+            </div>
+            <div class="stat-item">
+              <label>Occupied Spots:</label>
+              <span class="stat-value occupied" id="occupied-spots">13</span>
+            </div>
+            <div class="stat-item">
+              <label>Available Spots:</label>
+              <span class="stat-value available" id="available-spots">17</span>
+            </div>
+            <div class="stat-item">
+              <label>Occupancy Rate:</label>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: 43%"></div>
+              </div>
+              <span class="rate-label" id="occupancy-percent">43%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2>Parking Spot Types</h2>
+          <div class="spot-types">
+            <div class="type-item">
+              <span class="type-icon">🚗</span>
+              <label>Standard Spots:</label>
+              <span class="type-value" id="standard-count">0/20</span>
+            </div>
+            <div class="type-item">
+              <span class="type-icon">♿</span>
+              <label>Disabled Spots:</label>
+              <span class="type-value" id="disabled-count">0/5</span>
+            </div>
+            <div class="type-item">
+              <span class="type-icon">⭐</span>
+              <label>VIP Spots:</label>
+              <span class="type-value" id="vip-count">0/5</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h2>Activity Statistics</h2>
+          <div class="activity-stats">
+            <div class="activity-item">
+              <label>Total Parkings:</label>
+              <span class="activity-value" id="total-vehicles">0</span>
+            </div>
+            <div class="activity-item">
+              <label>Total Exits:</label>
+              <span class="activity-value" id="today-vehicles">0</span>
+            </div>
+            <div class="activity-item">
+              <label>💰 Total Revenue:</label>
+              <span class="revenue-value" id="total-revenue">₹0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Park Vehicle Screen -->
+      <div id="park" class="screen">
+        <h1>Park Vehicle</h1>
+
+        <div class="form-group">
+          <h2>Vehicle Details</h2>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="spot-type">Select Spot Type:</label>
+              <select id="spot-type">
+                <option value="standard">🚗 Standard Spot (₹20/hour)</option>
+                <option value="disabled">♿ Disabled Spot (₹10/hour)</option>
+                <option value="vip">⭐ VIP Spot (₹50/hour)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="vehicle-no">Vehicle Registration Number:</label>
+              <input
+                type="text"
+                id="vehicle-no"
+                placeholder="e.g., MH-02-AB-1234"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="category">Vehicle Category:</label>
+              <select id="category">
+                <option value="2W">2W - Two Wheeler (₹20)</option>
+                <option value="4W">4W - Four Wheeler (₹50)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="hours">Allotted Hours:</label>
+              <input type="number" id="hours" min="1" max="24" value="2" />
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-group">
+          <h2>Estimated Fee Preview</h2>
+          <div class="fee-display" id="fee-display">₹0.00</div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-success" onclick="parkVehicle()">
+              <label for="vehicle-no">Vehicle Name / Number:</label>
+          </button>
+          <button class="btn btn-secondary" onclick="clearParkForm()">
+            ↻ Clear
+                placeholder="e.g., MH-02-AB-1234 or John's Bike"
+        </div>
+
+        <div id="park-status" class="status-message"></div>
+      </div>
+
+      <!-- Vehicle Exit Screen -->
+      <div id="exit" class="screen">
+        <h1>Vehicle Exit & Billing</h1>
+
+        <div class="form-group">
+          <h2>Exit Details</h2>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="spot-id">Parking Spot ID:</label>
+              <input type="number" id="spot-id" placeholder="Enter spot ID" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field" style="flex: 1">
+              <label for="actual-hours">Actual Hours Used:</label>
+              <input
+                type="number"
+                id="actual-hours"
+                min="0"
+                max="24"
+                value="2"
+              />
+            </div>
+            <div class="form-field" style="flex: 1">
+              <label for="extra-minutes">Extra Minutes (0-59):</label>
+              <input
+                type="number"
+                id="extra-minutes"
+                min="0"
+                max="59"
+                value="0"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="billing-group">
+          <h2>Billing Details</h2>
+          <div id="billing-details" class="billing-details">
+            Click 'Calculate Fee' to view details
+          </div>
+          <div class="exit-fee-display" id="exit-fee">₹0.00</div>
+        </div>
+
+        <div class="form-group">
+          <h2>Payment</h2>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="paid-amount">Amount Paid:</label>
+              <input
+                type="number"
+                id="paid-amount"
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="calculateFee()">
+            🧮 Calculate Fee
+          </button>
+          <button class="btn btn-success" onclick="processExit()">
+            ✓ Process Exit & Pay
+          </button>
+          <button class="btn btn-secondary" onclick="clearExitForm()">
+            ↻ Clear
+          </button>
+        </div>
+
+        <div id="exit-status" class="status-message"></div>
+      </div>
+
+      <!-- Lot Status Screen -->
+      <div id="status" class="screen">
+        <h1>Parking Lot Status</h1>
+
+        <div class="status-group">
+          <h2>Overall Status</h2>
+          <div class="status-info">
+            <p>Total Parking Spots: <strong id="status-total">30</strong></p>
+            <p>
+              Occupied Spots:
+              <strong class="text-danger" id="status-occupied">0</strong>
+            </p>
+            <p>
+              Available Spots:
+              <strong class="text-success" id="status-available">30</strong>
+            </p>
+            <p>Occupancy Rate: <strong id="status-rate">0%</strong></p>
+          </div>
+        </div>
+
+        <div class="table-group">
+          <h2>Detailed Spot Status</h2>
+          <table class="spots-table">
+            <thead>
+              <tr>
+                <th>Spot ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Category</th>
+                <th>Allotted Hours</th>
+              </tr>
+            </thead>
+            <tbody id="spots-table-body">
+              <tr>
+                <td>1</td>
+                <td>🚗 Standard</td>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="showScreen('transactions')">
+              📋 View Transactions
+            </button>
+          </div>
+                <td><span class="badge available">🟢 Available</span></td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>🚗 Standard</td>
+                <td><span class="badge occupied">🔴 Occupied</span></td>
+                <td>MH-02-AB-1234</td>
+                <td>4W</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>🚗 Standard</td>
+                <td><span class="badge available">🟢 Available</span></td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>♿ Disabled</td>
+                <td><span class="badge occupied">🔴 Occupied</span></td>
+                <td>KA-03-CD-9876</td>
+                <td>4W</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>⭐ VIP</td>
+                <td><span class="badge available">🟢 Available</span></td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>🚗 Standard</td>
+                <td><span class="badge occupied">🔴 Occupied</span></td>
+                <td>DL-01-XY-5678</td>
+                <td>2W</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>7</td>
+                <td>⭐ VIP</td>
+                <td><span class="badge occupied">🔴 Occupied</span></td>
+                <td>TN-04-EF-2345</td>
+                <td>4W</td>
+                <td>2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="legend">
+          <h3>Legend</h3>
+          <div class="legend-items">
+            <span class="legend-item"
+              ><span class="badge available">🟢 Available</span> - Empty
+              spot</span
+            >
+            <span class="legend-item"
+              ><span class="badge occupied">🔴 Occupied</span> - Parked
+              vehicle</span
+            >
+            <span class="legend-item">🚗 Standard - Regular parking</span>
+            <span class="legend-item">♿ Disabled - Accessibility spot</span>
+            <span class="legend-item">⭐ VIP - Premium parking</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transactions Screen -->
+      <div id="transactions" class="screen">
+        <h1>Transaction Log</h1>
+
+        <div class="transaction-controls">
+          <label for="filter">Filter by Type:</label>
+          <select id="filter">
+            <option value="all">All Transactions</option>
+            <option value="entry">Entry Transactions</option>
+            <option value="exit">Exit Transactions</option>
+          </select>
+          <button class="btn btn-primary" onclick="exportTransactions()">
+            📥 Export to CSV
+          </button>
+        </div>
+
+        <div class="summary-group">
+          <h2>Summary Statistics</h2>
+          <div class="summary-info">
+            Total Transactions: <strong>25</strong> | Total Revenue:
+            <strong>₹18,550.00</strong> | Average Transaction:
+            <strong>₹742.00</strong> | Peak Hours:
+            <strong>10:00 AM - 12:00 PM</strong>
+          </div>
+        </div>
+
+        <div class="table-group">
+          <h2>All Transactions</h2>
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th>Spot ID</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Category</th>
+                <th>Duration</th>
+                <th>Amount (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <tr>
+                <td>2024-04-04 10:45:23</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>1</td>
+                <td>MH-02-AB-1234</td>
+                <td>4W</td>
+                <td>2</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 10:30:15</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>5</td>
+                <td>KA-03-CD-9876</td>
+                <td>4W</td>
+                <td>3</td>
+                <td class="text-right text-success">120.00</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 10:15:42</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>3</td>
+                <td>DL-01-XY-5678</td>
+                <td>2W</td>
+                <td>1</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 09:50:08</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>7</td>
+                <td>TN-04-EF-2345</td>
+                <td>4W</td>
+                <td>5</td>
+                <td class="text-right text-success">250.00</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 09:20:33</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>2</td>
+                <td>AP-05-GH-6789</td>
+                <td>4W</td>
+                <td>4</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 08:45:19</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>4</td>
+                <td>HR-06-IJ-1011</td>
+                <td>2W</td>
+                <td>2</td>
+                <td class="text-right text-success">60.00</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 08:10:44</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>6</td>
+                <td>PB-07-KL-1213</td>
+                <td>4W</td>
+                <td>3</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 07:55:27</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>2</td>
+                <td>MH-08-MN-1415</td>
+                <td>4W</td>
+                <td>4</td>
+                <td class="text-right text-success">180.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

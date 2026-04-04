@@ -1,0 +1,11 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <file>icons/parking.png</file>
+        <file>icons/car.png</file>
+        <file>icons/exit.png</file>
+        <file>icons/status.png</file>
+        <file>icons/transaction.png</file>
+        <file>icons/dashboard.png</file>
+    </qresource>
+</RCC>
