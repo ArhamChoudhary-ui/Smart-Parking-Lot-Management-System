@@ -19,7 +19,12 @@
           <button class="nav-btn" data-screen="transactions">
             📋 Transactions
           </button>
-          <button class="nav-btn" data-screen="admin" id="admin-btn" onclick="openAdminModal()">
+          <button
+            class="nav-btn"
+            data-screen="admin"
+            id="admin-btn"
+            onclick="openAdminModal()"
+          >
             🔐 Admin
           </button>
         </div>
@@ -35,11 +40,19 @@
         <div class="login-form">
           <div class="form-field">
             <label for="admin-password">Enter Admin Password:</label>
-            <input type="password" id="admin-password" placeholder="Enter password" />
+            <input
+              type="password"
+              id="admin-password"
+              placeholder="Enter password"
+            />
           </div>
           <div class="form-actions">
-            <button class="btn btn-success" onclick="adminLogin()">Login</button>
-            <button class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
+            <button class="btn btn-success" onclick="adminLogin()">
+              Login
+            </button>
+            <button class="btn btn-secondary" onclick="closeAdminModal()">
+              Cancel
+            </button>
           </div>
           <div id="login-error" class="status-message"></div>
         </div>
@@ -61,21 +74,21 @@
             </div>
             <div class="stat-item">
               <label>Occupied Spots:</label>
-              <span class="stat-value occupied" id="occupied-spots">0</span>
+              <span class="stat-value occupied" id="occupied-spots">13</span>
             </div>
             <div class="stat-item">
               <label>Available Spots:</label>
-              <span class="stat-value available" id="available-spots">30</span>
+              <span class="stat-value available" id="available-spots">17</span>
             </div>
             <div class="stat-item">
               <label>Occupancy Rate:</label>
               <div class="progress-container">
-                <div class="progress-bar" style="width: 0%"></div>
+                <div class="progress-bar" style="width: 43%"></div>
               </div>
-              <span class="rate-label" id="occupancy-percent">0%</span>
+              <span class="rate-label" id="occupancy-percent">43%</span>
             </div>
           </div>
-          <div class="form-actions" style="margin-top: 20px;">
+          <div class="form-actions" style="margin-top: 20px">
             <button class="btn btn-danger" onclick="confirmSystemReset()">
               🗑️ Reset All Data
             </button>
@@ -127,9 +140,14 @@
         <div class="group parking-visual-group">
           <h2>Parking Slot Illustration</h2>
           <p class="parking-visual-note">
-            Green means available, red means occupied. All 30 slots are shown below.
+            Green means available, red means occupied. All 30 slots are shown
+            below.
           </p>
-          <div id="parking-lot-visual" class="parking-lot-visual" aria-label="Parking lot visual map"></div>
+          <div
+            id="parking-lot-visual"
+            class="parking-lot-visual"
+            aria-label="Parking lot visual map"
+          ></div>
           <div class="parking-legend">
             <span><span class="legend-dot available"></span> Available</span>
             <span><span class="legend-dot occupied"></span> Occupied</span>
@@ -191,11 +209,11 @@
 
         <div class="form-actions">
           <button class="btn btn-success" onclick="parkVehicle()">
-              <label for="vehicle-no">Vehicle Name / Number:</label>
+            ✓ Park Vehicle
           </button>
           <button class="btn btn-secondary" onclick="clearParkForm()">
             ↻ Clear
-                placeholder="e.g., MH-02-AB-1234 or John's Bike"
+          </button>
         </div>
 
         <div id="park-status" class="status-message"></div>
@@ -312,70 +330,14 @@
                 <th>Allotted Hours</th>
               </tr>
             </thead>
-            <tbody id="spots-table-body">
-              <tr>
-                <td>1</td>
-                <td>🚗 Standard</td>
-          <div class="form-actions">
-            <button class="btn btn-primary" onclick="showScreen('transactions')">
-              📋 View Transactions
-            </button>
-          </div>
-                <td><span class="badge available">🟢 Available</span></td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>2</td>
-                <td>🚗 Standard</td>
-                <td><span class="badge occupied">🔴 Occupied</span></td>
-                <td>MH-02-AB-1234</td>
-                <td>4W</td>
-                <td>2</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>🚗 Standard</td>
-                <td><span class="badge available">🟢 Available</span></td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>4</td>
-                <td>♿ Disabled</td>
-                <td><span class="badge occupied">🔴 Occupied</span></td>
-                <td>KA-03-CD-9876</td>
-                <td>4W</td>
-                <td>3</td>
-              </tr>
-              <tr>
-                <td>5</td>
-                <td>⭐ VIP</td>
-                <td><span class="badge available">🟢 Available</span></td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-              </tr>
-              <tr>
-                <td>6</td>
-                <td>🚗 Standard</td>
-                <td><span class="badge occupied">🔴 Occupied</span></td>
-                <td>DL-01-XY-5678</td>
-                <td>2W</td>
-                <td>1</td>
-              </tr>
-              <tr>
-                <td>7</td>
-                <td>⭐ VIP</td>
-                <td><span class="badge occupied">🔴 Occupied</span></td>
-                <td>TN-04-EF-2345</td>
-                <td>4W</td>
-                <td>2</td>
-              </tr>
-            </tbody>
+            <tbody id="spots-table-body"></tbody>
           </table>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="showScreen('transactions')">
+            📋 View Transactions
+          </button>
         </div>
 
         <div class="legend">
@@ -415,10 +377,10 @@
         <div class="summary-group">
           <h2>Summary Statistics</h2>
           <div class="summary-info">
-            Total Transactions: <strong>0</strong> | Total Revenue:
-            <strong>₹0.00</strong> | Average Transaction:
-            <strong>₹0.00</strong> | Peak Hours:
-            <strong>N/A</strong>
+            Total Transactions: <strong>25</strong> | Total Revenue:
+            <strong>₹18,550.00</strong> | Average Transaction:
+            <strong>₹742.00</strong> | Peak Hours:
+            <strong>10:00 AM - 12:00 PM</strong>
           </div>
         </div>
 
@@ -426,13 +388,66 @@
           <h2>All Transactions</h2>
           <table class="transactions-table">
             <thead>
-                <td>1</td>
-                <td>🚗 Standard</td>
-                <td><span class="badge available">🟢 Available</span></td>
+              <tr>
+                <th>Timestamp</th>
+                <th>Type</th>
+                <th>Spot ID</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Category</th>
+                <th>Duration</th>
+                <th>Amount (₹)</th>
               </tr>
             </thead>
             <tbody id="transactions-table-body">
               <tr>
+                <td>2024-04-04 10:45:23</td>
+                <td><span class="badge entry">� Entry</span></td>
+                <td>1</td>
+                <td>MH-02-AB-1234</td>
+                <td>4W</td>
+                <td>2</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 10:30:15</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>5</td>
+                <td>KA-03-CD-9876</td>
+                <td>4W</td>
+                <td>3</td>
+                <td class="text-right text-success">120.00</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 10:15:42</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>3</td>
+                <td>DL-01-XY-5678</td>
+                <td>2W</td>
+                <td>1</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 09:50:08</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>7</td>
+                <td>TN-04-EF-2345</td>
+                <td>4W</td>
+                <td>5</td>
+                <td class="text-right text-success">250.00</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 09:20:33</td>
+                <td><span class="badge entry">🟢 Entry</span></td>
+                <td>2</td>
+                <td>AP-05-GH-6789</td>
+                <td>4W</td>
+                <td>4</td>
+                <td class="text-right">-</td>
+              </tr>
+              <tr>
+                <td>2024-04-04 08:45:19</td>
+                <td><span class="badge exit">🔴 Exit</span></td>
+                <td>4</td>
                 <td>HR-06-IJ-1011</td>
                 <td>2W</td>
                 <td>2</td>
@@ -465,15 +480,22 @@
       <div id="admin" class="screen">
         <h1>🔐 Admin Panel</h1>
         <div id="admin-not-logged" class="admin-login-prompt">
-          <p>Access restricted. <button class="btn btn-primary" onclick="openAdminModal()">Login as Admin</button></p>
+          <p>
+            Access restricted.
+            <button class="btn btn-primary" onclick="openAdminModal()">
+              Login as Admin
+            </button>
+          </p>
         </div>
 
-        <div id="admin-logged" class="admin-content" style="display:none;">
+        <div id="admin-logged" class="admin-content" style="display: none">
           <div class="group">
             <h2>Welcome, Admin</h2>
             <p>Manage the parking system with advanced controls.</p>
             <div class="form-actions">
-              <button class="btn btn-secondary" onclick="adminLogout()">🚪 Logout</button>
+              <button class="btn btn-secondary" onclick="adminLogout()">
+                🚪 Logout
+              </button>
             </div>
           </div>
 
@@ -503,5 +525,96 @@
             <h2>🛠️ System Management</h2>
             <div class="admin-controls">
               <div class="control-item">
-                <td colspan="7" class="text-center">No transactions yet.</td>
-                <td>MH-08-MN-1415</td>
+                <h3>📊 View All Vehicles</h3>
+                <p>Display all currently parked vehicles with details.</p>
+                <button class="btn btn-primary" onclick="viewAllVehicles()">
+                  View Vehicles
+                </button>
+              </div>
+              <div class="control-item">
+                <h3>🔍 Search Vehicle</h3>
+                <div class="form-field">
+                  <input
+                    type="text"
+                    id="search-vehicle"
+                    placeholder="Enter vehicle registration number"
+                  />
+                  <button class="btn btn-primary" onclick="searchVehicle()">
+                    Search
+                  </button>
+                </div>
+                <div id="search-result" style="margin-top: 10px"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group danger-zone">
+            <h2>⚠️ Danger Zone</h2>
+            <div class="danger-controls">
+              <div class="control-item">
+                <h3>🚨 Clear Single Vehicle</h3>
+                <p>Remove a specific vehicle from the system.</p>
+                <div class="form-field">
+                  <input
+                    type="number"
+                    id="remove-spot-id"
+                    placeholder="Enter Spot ID"
+                    min="1"
+                    max="30"
+                  />
+                  <button class="btn btn-danger" onclick="removeVehicle()">
+                    Remove Vehicle
+                  </button>
+                </div>
+                <div id="remove-status" style="margin-top: 10px"></div>
+              </div>
+              <div class="control-item">
+                <h3>🗑️ Clear All Data</h3>
+                <p>
+                  Reset the entire system - clears all vehicles and
+                  transactions.
+                </p>
+                <button class="btn btn-danger" onclick="confirmSystemReset()">
+                  Reset All Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="group">
+            <h2>📋 Transaction Audit</h2>
+            <div class="audit-controls">
+              <label for="audit-filter">Filter by type:</label>
+              <select id="audit-filter">
+                <option value="all">All Transactions</option>
+                <option value="entry">Entry Only</option>
+                <option value="exit">Exit Only</option>
+              </select>
+              <button class="btn btn-primary" onclick="generateAuditReport()">
+                Generate Report
+              </button>
+              <button class="btn btn-primary" onclick="exportAuditCSV()">
+                📥 Export to CSV
+              </button>
+            </div>
+            <div
+              id="audit-report"
+              style="
+                margin-top: 15px;
+                padding: 10px;
+                background: #f0f2f5;
+                border-radius: 5px;
+                max-height: 300px;
+                overflow-y: auto;
+              "
+            >
+              No report generated yet.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
