@@ -1,71 +1,144 @@
-# Smart Parking Management System
+# Smart Parking Lot Management System
 
-A multi-technology smart parking project with:
+A multi-platform smart parking project that includes:
 
-- A Qt desktop GUI for parking operations
-- Python utility tools
-- A web frontend prototype
+- A full Qt desktop management application
+- A browser-based web frontend (Vite)
+- Python utility tooling
+- End-user and technical documentation
 
-## Features
+The system is designed to manage day-to-day parking lot operations such as vehicle entry, exit billing, spot tracking, and transaction reporting.
 
-- Parking entry and exit workflows
-- Real-time lot status tracking
-- Transaction history and reporting
-- Documented UI/UX and case handling
-- Web prototype for quick interface experimentation
+## Highlights
+
+- Dashboard with occupancy and revenue stats
+- Vehicle entry flow with spot-type and duration selection
+- Vehicle exit workflow with fee calculation and payment processing
+- Real-time lot status and occupancy visibility
+- Transaction history and CSV export support
+- Admin capabilities in the web implementation
 
 ## Tech Stack
 
-- C++17 + Qt Widgets (desktop application)
+- C++17 + Qt Widgets (desktop app)
+- JavaScript + Vite (web app)
 - Python (support utilities)
-- HTML, CSS, JavaScript (web frontend)
+- Markdown documentation for guides and specs
 
-## Setup
+## Repository Structure
 
-### Desktop App (Qt)
+```text
+.
+├── desktop-app/          # Qt desktop application (C++)
+│   ├── include/
+│   ├── src/
+│   ├── resources/
+│   └── ParkingGUI.pro
+├── web/                  # Vite frontend
+│   ├── public/
+│   ├── src/
+│   ├── index.html
+│   └── vercel.json
+├── python-tools/         # Python utilities and logs
+├── docs/                 # User guide, UI/UX spec, quick reference, case handling
+├── assets/
+│   └── images/
+├── tests/
+├── LICENSE
+└── README.md
+```
 
-1. Install Qt 5.12+ (or newer) with qmake support.
-2. Open `desktop-app/ParkingGUI.pro` in Qt Creator.
-3. Build and run the project.
+## Quick Start
 
-### Python Tools
+### 1) Desktop App (Qt)
 
-1. Create and activate a virtual environment.
-2. Install dependencies if needed.
-3. Run scripts from `python-tools/`.
+Prerequisites:
 
-### Web Frontend
+- Qt 5.12+ with qmake support
+- C++17 toolchain
 
-1. Open `web/index.html` in a browser.
-2. Or serve the folder with a local static server.
+Run:
+
+1. Open `desktop-app/ParkingGUI.pro` in Qt Creator.
+2. Select a valid Qt kit.
+3. Build and run.
+
+For more details, see `desktop-app/README.md` and `docs/README_GUI.md`.
+
+### 2) Web App (Vite)
+
+Prerequisites:
+
+- Node.js 18+ and npm
+
+Run locally:
+
+```bash
+cd web
+npm install
+npm run dev
+```
+
+Build and preview:
+
+```bash
+cd web
+npm run build
+npm run preview
+```
+
+For deployment details, see `web/README.md`.
+
+### 3) Python Tools
+
+```bash
+cd python-tools
+python -m venv .venv
+source .venv/bin/activate   # macOS/Linux
+python parking_gui.py
+```
+
+See `python-tools/README.md` for folder details.
+
+## Documentation
+
+Detailed docs are available in `docs/`:
+
+- `docs/USER_GUIDE.md` - End-user usage walkthrough
+- `docs/QUICK_REFERENCE.md` - Fast operational reference
+- `docs/CASE_HANDLING.md` - Error and edge-case handling
+- `docs/UI_UX_SPECIFICATION.md` - UI/UX design specification
+- `docs/README_GUI.md` - Desktop GUI feature and architecture notes
+
+## Deployment (Web)
+
+The web app is configured for Git-based deployment to Vercel.
+
+Recommended Vercel project settings:
+
+- Root Directory: `web`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+
+SPA routing fallback is configured in `web/vercel.json`.
 
 ## Screenshots
 
-Place screenshots in `assets/images/`.
+Add screenshots to `assets/images/` for a richer project page.
 
-Suggested files:
+Suggested names:
 
 - `assets/images/dashboard.png`
 - `assets/images/entry-form.png`
 - `assets/images/exit-billing.png`
 
-## Repository Structure
+## Contributing
 
-```text
-smart-parking-management-system/
-├── README.md
-├── LICENSE
-├── .gitignore
-├── docs/
-├── desktop-app/
-├── web/
-├── python-tools/
-├── assets/
-│   └── images/
-└── tests/
-```
+1. Fork the repository.
+2. Create a feature branch.
+3. Make focused changes.
+4. Open a pull request with a clear description and test notes.
 
-## Notes
+## License
 
-- Root is intentionally minimal for professional presentation.
-- Generated binaries and build outputs are ignored via `.gitignore`.
+This project is licensed under the terms of the `LICENSE` file in the repository root.
