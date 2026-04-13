@@ -18,7 +18,7 @@ public:
 private slots:
     void calculateFee();
     void processExit();
-    void showReceipt(double totalFee, double change);
+    void showReceipt(const ParkingLot::Receipt &receipt);
     void showError(const QString &message);
 
 private:

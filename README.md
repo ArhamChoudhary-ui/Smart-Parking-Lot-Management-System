@@ -48,6 +48,30 @@ The system is designed to manage day-to-day parking lot operations such as vehic
 └── README.md
 ```
 
+## Submission Package Format
+
+Use the following folder layout when preparing your final submission bundle:
+
+```text
+[Project Name]_Submission/
+|___01_Source_Code/
+|   |___main.cpp
+|   |___MyClass.h
+|   |___MyClass.cpp
+|
+|___02_Input_Files/
+|   |___input.txt       // or relevant file e.g., nav_data.csv, grid_config.txt
+|   |___stop_words.txt  // if applicable
+|
+|___03_Test_Report/
+|   |___Example_Execution.txt   // console output demonstration
+|
+|___04_Technical_README/
+	|___README.pdf      // document explaining move semantics / DMA usage
+```
+
+For this project, adapt section names as needed while keeping the same top-level numbering style.
+
 ## Quick Start
 
 ### 1) Desktop App (Qt)

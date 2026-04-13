@@ -100,13 +100,15 @@ int main() {
                 cout << "\n========== RECEIPT ==========" << endl;
                 cout << "Time          : " << receipt.timestamp << endl;
                 cout << "Spot ID       : " << receipt.spotId << endl;
+                cout << "Spot Type     : " << receipt.spotType << endl;
                 cout << "Vehicle       : " << receipt.vehicleNumber << endl;
                 cout << "Category      : " << receipt.vehicleCategory << endl;
                 cout << "Allowed Time  : " << receipt.allottedHours << " hours" << endl;
                 cout << "Used Time     : " << receipt.actualHours << "h " << receipt.actualExtraMinutes << "m" << endl;
                 cout << "Overtime      : " << receipt.overtimeMinutes << " minutes" << endl;
                 cout << "" << endl;
-                cout << "Base Charge   : " << fixed << setprecision(2) << receipt.vehicleInitialCharge << endl;
+                cout << "Spot Charge   : " << fixed << setprecision(2) << receipt.spotFee << endl;
+                cout << "Vehicle Charge: " << fixed << setprecision(2) << receipt.vehicleInitialCharge << endl;
                 cout << "Overtime Fine : " << fixed << setprecision(2) << receipt.overtimeFine << endl;
                 cout << "Total Fee     : " << fixed << setprecision(2) << receipt.totalFee << endl;
                 cout << "Paid Amount   : " << fixed << setprecision(2) << receipt.paidAmount << endl;

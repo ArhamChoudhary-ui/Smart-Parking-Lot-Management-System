@@ -156,7 +156,7 @@ MainWindow (QMainWindow)
 
 - Any minutes beyond billable hours = charge for full hour
 - Example: Parked 2h 5m = charge 3 hours
-- Overtime penalty: 50% of standard rate
+- Overtime penalty: 50% of selected spot hourly rate (Standard/Disabled/VIP)
 
 ---
 

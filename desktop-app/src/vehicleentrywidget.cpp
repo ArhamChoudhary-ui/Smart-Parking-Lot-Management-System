@@ -263,18 +263,24 @@ void VehicleEntryWidget::parkVehicle() {
         QString vehicleCategory = vehicleCategoryCombo->currentData().toString();
         int hours = hoursSpinBox->value();
 
-        // Call parkingLot->parkVehicle() method
-        // For now, showing success message
-        showSuccess(QString::number(spotType));
+        parkingLot->parkVehicle(
+            spotType,
+            vehicleNumber.toStdString(),
+            vehicleCategory.toStdString(),
+            hours
+        );
+        showSuccess();
 
     } catch (const std::exception &e) {
         showError(QString::fromStdString(e.what()));
     }
 }
 
-void VehicleEntryWidget::showSuccess(const QString &spotId) {
+void VehicleEntryWidget::showSuccess() {
     QMessageBox::information(this, "Success",
-        "Vehicle parked successfully!\nParking Spot ID: " + spotId);
+        "Vehicle parked successfully.");
+    statusLabel->setText("✅ Vehicle parked successfully");
+    statusLabel->setStyleSheet("font-weight: bold; color: #27ae60; padding: 10px;");
     clearFields();
 }
 

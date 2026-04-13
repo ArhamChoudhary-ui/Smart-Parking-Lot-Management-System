@@ -18,7 +18,7 @@ public:
 
 private slots:
     void parkVehicle();
-    void showSuccess(const QString &spotId);
+    void showSuccess();
     void showError(const QString &message);
 
 private:

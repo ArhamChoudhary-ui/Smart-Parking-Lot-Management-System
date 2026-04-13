@@ -685,6 +685,238 @@ h3 {
   }
 
   h1 {
+    :root {
+      --primary-blue: #0b5fff;
+      --success-green: #0f9d58;
+      --danger-red: #d83a2e;
+      --dark-gray: #102a43;
+      --light-gray: #7b8794;
+      --bg-light: #f4f7fb;
+      --bg-white: #ffffff;
+      --warning-orange: #ff8f1f;
+      --premium-purple: #1f6f8b;
+      --border-light: #d9e2ec;
+      --text-muted: #486581;
+      --transition: all 0.25s ease;
+    }
+
+    body {
+      font-family: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
+      background:
+        radial-gradient(
+          1200px 600px at 90% -20%,
+          rgba(11, 95, 255, 0.15),
+          transparent 50%
+        ),
+        radial-gradient(
+          900px 500px at -10% 0%,
+          rgba(255, 143, 31, 0.12),
+          transparent 55%
+        ),
+        var(--bg-light);
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(92deg, #102a43, #1f3c88 60%, #0b5fff);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(16, 42, 67, 0.25);
+    }
+
+    .nav-btn {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(3px);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn.active {
+      background: #ff8f1f;
+      color: #102a43;
+    }
+
+    .clock {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 8px 12px;
+    }
+
+    .container {
+      padding-top: 26px;
+    }
+
+    h1 {
+      letter-spacing: 0.3px;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+    }
+
+    .group,
+    .form-group,
+    .table-group,
+    .status-group,
+    .summary-group,
+    .billing-group,
+    .preview-group,
+    .legend,
+    .modal-content {
+      border: 1px solid var(--border-light);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(16, 42, 67, 0.08);
+    }
+
+    .group h2,
+    .form-group h2,
+    .table-group h2,
+    .status-group h2,
+    .summary-group h2,
+    .billing-group h2,
+    .preview-group h2 {
+      font-size: 1.15rem;
+    }
+
+    .stats-grid .stat-item,
+    .activity-item,
+    .type-item,
+    .legend-item,
+    .status-info,
+    .summary-info,
+    .billing-details,
+    .control-item {
+      border-radius: 14px;
+      border: 1px solid var(--border-light);
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+    }
+
+    .stat-item {
+      border-left: 6px solid var(--primary-blue);
+    }
+
+    .progress-container {
+      border-radius: 999px;
+      background: #d9e2ec;
+    }
+
+    .progress-bar {
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0b5fff, #00a6fb);
+    }
+
+    .parking-slot {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .parking-slot.available {
+      background: linear-gradient(135deg, #0f9d58, #20bf55);
+    }
+
+    .parking-slot.occupied {
+      background: linear-gradient(135deg, #d83a2e, #ff4d4d);
+    }
+
+    .form-field input,
+    .form-field select,
+    .transaction-controls select,
+    .login-form .form-field input {
+      border-radius: 10px;
+      border: 1px solid #bcccdc;
+      background: #fff;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .transaction-controls select:focus,
+    .login-form .form-field input:focus {
+      box-shadow: 0 0 0 4px rgba(11, 95, 255, 0.12);
+      border-color: var(--primary-blue);
+    }
+
+    .btn {
+      border-radius: 12px;
+      letter-spacing: 0.2px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0b5fff, #00a6fb);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #0f9d58, #20bf55);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #7b8794, #9aa5b1);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #d83a2e, #ff6b35);
+    }
+
+    .fee-display,
+    .exit-fee-display {
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      letter-spacing: 0.6px;
+    }
+
+    .billing-details {
+      color: #334e68;
+      font-style: normal;
+      line-height: 1.5;
+    }
+
+    .spots-table,
+    .transactions-table {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .spots-table thead,
+    .transactions-table thead {
+      background: linear-gradient(90deg, #102a43, #1f3c88);
+    }
+
+    .spots-table tbody tr:hover,
+    .transactions-table tbody tr:hover {
+      background-color: #eef4ff;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 5px 10px;
+    }
+
+    .modal {
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-content {
+      margin-top: 8%;
+    }
+
+    .screen.active {
+      animation: fadeIn 0.35s ease;
+    }
+
+    @media (max-width: 768px) {
+      .nav-buttons {
+        gap: 8px;
+      }
+
+      .nav-btn {
+        min-width: 105px;
+        padding: 8px 12px;
+      }
+
+      .clock {
+        width: 100%;
+        text-align: center;
+      }
+    }
     font-size: 24px;
     margin-bottom: 20px;
   }

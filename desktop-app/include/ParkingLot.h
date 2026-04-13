@@ -120,11 +120,27 @@ private:
             }
         }
 
-        bill.totalFee = bill.vehicleInitialCharge + bill.overtimeFine;
+        bill.totalFee = bill.spotFee + bill.vehicleInitialCharge + bill.overtimeFine;
         return bill;
     }
 
 public:
+    struct BillingPreview {
+        int spotId;
+        string spotType;
+        string vehicleNumber;
+        string vehicleCategory;
+        int allottedHours;
+        int actualHours;
+        int actualExtraMinutes;
+        int overtimeMinutes;
+        double spotHourlyRate;
+        double spotFee;
+        double vehicleInitialCharge;
+        double overtimeFine;
+        double totalFee;
+    };
+
     struct Receipt {
         int spotId;
         string spotType;
@@ -252,6 +268,11 @@ public:
     }
 
     double getExitFeePreview(int spotId, int actualHours, int actualExtraMinutes) const {
+        BillingPreview preview = getExitBillingPreview(spotId, actualHours, actualExtraMinutes);
+        return preview.totalFee;
+    }
+
+    BillingPreview getExitBillingPreview(int spotId, int actualHours, int actualExtraMinutes) const {
         ParkingSpot* spot = findSpotById(spotId);
         if (spot == nullptr) {
             throw runtime_error("Wrong spot ID. No such spot found.");
@@ -262,7 +283,23 @@ public:
         }
 
         BillingDetails bill = calculateBilling(spot, actualHours, actualExtraMinutes);
-        return bill.totalFee;
+
+        BillingPreview preview;
+        preview.spotId = spot->getSpotId();
+        preview.spotType = spot->getSpotTypeDescription();
+        preview.vehicleNumber = spot->getVehicleNumber();
+        preview.vehicleCategory = spot->getVehicleCategory();
+        preview.allottedHours = bill.allottedHours;
+        preview.actualHours = bill.actualHours;
+        preview.actualExtraMinutes = bill.actualExtraMinutes;
+        preview.overtimeMinutes = bill.overtimeMinutes;
+        preview.spotHourlyRate = getSpotHourlyRate(spot);
+        preview.spotFee = bill.spotFee;
+        preview.vehicleInitialCharge = bill.vehicleInitialCharge;
+        preview.overtimeFine = bill.overtimeFine;
+        preview.totalFee = bill.totalFee;
+
+        return preview;
     }
 
     Receipt exitVehicleWithPayment(int spotId, int actualHours, int actualExtraMinutes, double paidAmount) {
@@ -295,6 +332,7 @@ public:
         string logExit = "EXIT   Spot " + to_string(spotId) + 
                          "   Vehicle: " + vehicleNo + 
                          "   Used: " + to_string(bill.actualHours) + "h " + to_string(bill.actualExtraMinutes) + "m" + 
+                         "   SpotFee: " + to_string(bill.spotFee) +
                          "   Base: " + to_string(bill.vehicleInitialCharge) + 
                          "   Fine: " + to_string(bill.overtimeFine) + 
                          "   Total: " + to_string(bill.totalFee);

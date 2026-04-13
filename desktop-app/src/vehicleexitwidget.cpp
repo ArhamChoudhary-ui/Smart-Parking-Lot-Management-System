@@ -327,25 +327,44 @@ void VehicleExitWidget::calculateFee() {
     }
 
     try {
-        // Calculate fee based on allotted hours and actual hours
-        // This would call parkingLot->getExitFeePreview()
         int spotId = spotIdInput->text().toInt();
         int actualHours = actualHoursSpinBox->value();
         int extraMinutes = extraMinutesSpinBox->value();
+        if (spotId <= 0) {
+            showError("Please enter a valid parking spot ID");
+            return;
+        }
 
-        // Placeholder calculation
-        double fee = (actualHours * 20) + (extraMinutes > 0 ? 10 : 0);
-        feeDisplay->setText("₹" + QString::number(fee, 'f', 2));
+        ParkingLot::BillingPreview bill = parkingLot->getExitBillingPreview(spotId, actualHours, extraMinutes);
+        feeDisplay->setText("₹" + QString::number(bill.totalFee, 'f', 2));
 
-        // Update billing details
+        vehicleInfoLabel->setText(
+            QString("Spot: %1 (%2) | Vehicle: %3 | Category: %4 | Allotted: %5h")
+                .arg(bill.spotId)
+                .arg(QString::fromStdString(bill.spotType))
+                .arg(QString::fromStdString(bill.vehicleNumber))
+                .arg(QString::fromStdString(bill.vehicleCategory))
+                .arg(bill.allottedHours)
+        );
+        vehicleInfoLabel->setStyleSheet("color: #2c3e50; font-weight: bold;");
+
         QString details = QString(
-            "Spot ID: %1\n"
-            "Parking Duration: %2 hours %3 minutes\n"
-            "Base Fee: ₹%4\n"
-            "Overtime Charges: ₹%5\n"
+            "Spot Type: %1 (₹%2/hr)\n"
+            "Used Duration: %3 hours %4 minutes\n"
+            "Parking Charge: ₹%5\n"
+            "Vehicle Base Charge: ₹%6\n"
+            "Overtime Fine: ₹%7\n"
             "─────────────────\n"
-            "Total Fee: ₹%6"
-        ).arg(spotId).arg(actualHours).arg(extraMinutes).arg(actualHours * 20).arg(extraMinutes > 0 ? 10 : 0).arg(fee, 0, 'f', 2);
+            "Total Fee: ₹%8"
+        )
+            .arg(QString::fromStdString(bill.spotType))
+            .arg(bill.spotHourlyRate, 0, 'f', 2)
+            .arg(bill.actualHours)
+            .arg(bill.actualExtraMinutes)
+            .arg(bill.spotFee, 0, 'f', 2)
+            .arg(bill.vehicleInitialCharge, 0, 'f', 2)
+            .arg(bill.overtimeFine, 0, 'f', 2)
+            .arg(bill.totalFee, 0, 'f', 2);
         billingDetailsLabel->setText(details);
         billingDetailsLabel->setStyleSheet("color: #2c3e50; font-family: monospace;");
 
@@ -364,37 +383,64 @@ void VehicleExitWidget::processExit() {
         int actualHours = actualHoursSpinBox->value();
         int extraMinutes = extraMinutesSpinBox->value();
         double paidAmount = paidAmountInput->text().toDouble();
-        double totalFee = feeDisplay->text().replace("₹", "").toDouble();
-
-        if (paidAmount < totalFee) {
-            showError(QString("Insufficient payment. Required: ₹%1, Received: ₹%2")
-                     .arg(totalFee, 0, 'f', 2).arg(paidAmount, 0, 'f', 2));
+        if (spotId <= 0) {
+            showError("Please enter a valid parking spot ID");
+            return;
+        }
+        if (paidAmount <= 0) {
+            showError("Please enter a valid paid amount");
             return;
         }
 
-        double change = paidAmount - totalFee;
-        showReceipt(totalFee, change);
+        ParkingLot::Receipt receipt = parkingLot->exitVehicleWithPayment(
+            spotId,
+            actualHours,
+            extraMinutes,
+            paidAmount
+        );
+        showReceipt(receipt);
+        statusLabel->setText("✅ Payment successful. Vehicle exited from spot " + QString::number(receipt.spotId));
+        statusLabel->setStyleSheet("font-weight: bold; color: #27ae60; padding: 10px;");
 
     } catch (const std::exception &e) {
         showError(QString::fromStdString(e.what()));
     }
 }
 
-void VehicleExitWidget::showReceipt(double totalFee, double change) {
-    QString receipt = QString(
+void VehicleExitWidget::showReceipt(const ParkingLot::Receipt &receipt) {
+    QString receiptText = QString(
         "═══════════════════════════════════\n"
         "          PARKING RECEIPT\n"
         "═══════════════════════════════════\n"
-        "Total Fee:          ₹%1\n"
-        "Amount Paid:        ₹%2\n"
-        "Change:             ₹%3\n"
+        "Spot: %1 (%2)\n"
+        "Vehicle: %3 (%4)\n"
+        "Used: %5h %6m (Allotted: %7h)\n"
+        "Parking Charge:     ₹%8\n"
+        "Vehicle Charge:     ₹%9\n"
+        "Overtime Fine:      ₹%10\n"
+        "Total Fee:          ₹%11\n"
+        "Amount Paid:        ₹%12\n"
+        "Change:             ₹%13\n"
         "═══════════════════════════════════\n"
         "Thank you! Drive safely!"
-    ).arg(totalFee, 0, 'f', 2).arg(paidAmountInput->text()).arg(change, 0, 'f', 2);
+    )
+        .arg(receipt.spotId)
+        .arg(QString::fromStdString(receipt.spotType))
+        .arg(QString::fromStdString(receipt.vehicleNumber))
+        .arg(QString::fromStdString(receipt.vehicleCategory))
+        .arg(receipt.actualHours)
+        .arg(receipt.actualExtraMinutes)
+        .arg(receipt.allottedHours)
+        .arg(receipt.spotFee, 0, 'f', 2)
+        .arg(receipt.vehicleInitialCharge, 0, 'f', 2)
+        .arg(receipt.overtimeFine, 0, 'f', 2)
+        .arg(receipt.totalFee, 0, 'f', 2)
+        .arg(receipt.paidAmount, 0, 'f', 2)
+        .arg(receipt.change, 0, 'f', 2);
 
     QMessageBox msgBox(this);
     msgBox.setWindowTitle("Receipt");
-    msgBox.setText(receipt);
+    msgBox.setText(receiptText);
     msgBox.setFont(QFont("Courier", 10));
     msgBox.setStyleSheet("QMessageBox { background-color: #f0f2f5; }");
     msgBox.exec();

@@ -54,7 +54,7 @@ public:
     }
 
     double calculateFee(int hours) const override {
-        return 100.0 + (50.0 * hours);
+        return 50.0 * hours;
     }
 
     string getSpotTypeDescription() const override {

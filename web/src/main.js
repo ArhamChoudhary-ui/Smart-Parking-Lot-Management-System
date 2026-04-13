@@ -8,6 +8,11 @@ const PRICING = {
   vip: 50,
 };
 
+const VEHICLE_BASE_CHARGES = {
+  "2W": 20,
+  "4W": 50,
+};
+
 const CAPACITY = {
   standard: 20,
   disabled: 5,
@@ -26,6 +31,7 @@ function initSystem() {
   bindNavigation();
   bindInputs();
   bindAdminModal();
+  seedInitialVehicles();
   updateAllViews();
   updateClock();
   setInterval(updateClock, 1000);
@@ -49,6 +55,31 @@ function initializeSpots() {
   });
 }
 
+function seedInitialVehicles() {
+  const sample = [
+    { no: "MH-02-AB-1234", type: "standard", category: "4W", hours: 2 },
+    { no: "KA-03-CD-9876", type: "disabled", category: "4W", hours: 3 },
+    { no: "DL-01-XY-5678", type: "standard", category: "2W", hours: 1 },
+    { no: "TN-04-EF-2345", type: "vip", category: "4W", hours: 2 },
+  ];
+
+  sample.forEach((vehicle) => {
+    const spot = findAvailableSpot(vehicle.type);
+    if (!spot) {
+      return;
+    }
+    occupySpot(spot, vehicle.no, vehicle.category, vehicle.hours);
+    addTransaction({
+      type: "entry",
+      spotId: spot.id,
+      vehicleNo: vehicle.no,
+      category: vehicle.category,
+      duration: vehicle.hours,
+      amount: 0,
+    });
+  });
+}
+
 function bindNavigation() {
   const buttons = document.querySelectorAll(".nav-btn");
   buttons.forEach((btn) => {
@@ -67,12 +98,16 @@ function bindNavigation() {
 function bindInputs() {
   const hours = document.getElementById("hours");
   const spotType = document.getElementById("spot-type");
+  const category = document.getElementById("category");
 
   if (hours) {
     hours.addEventListener("input", updateFeePreview);
   }
   if (spotType) {
     spotType.addEventListener("change", updateFeePreview);
+  }
+  if (category) {
+    category.addEventListener("change", updateFeePreview);
   }
 }
 
@@ -146,12 +181,52 @@ function updateClock() {
 
 function updateFeePreview() {
   const type = getValue("spot-type");
+  const category = getValue("category");
   const hours = Number(getValue("hours") || 0);
-  const fee = hours > 0 && PRICING[type] ? hours * PRICING[type] : 0;
+  const spotFee = hours > 0 && PRICING[type] ? hours * PRICING[type] : 0;
+  const vehicleFee = VEHICLE_BASE_CHARGES[category] || 0;
+  const fee = spotFee + vehicleFee;
   const feeEl = document.getElementById("fee-display");
   if (feeEl) {
     feeEl.textContent = formatINR(fee);
   }
+}
+
+function calculateBilling(spot, actualHours, extraMinutes) {
+  if (!spot || !spot.occupied) {
+    return null;
+  }
+
+  const hourlyRate = PRICING[spot.type] || 0;
+  const vehicleBaseCharge = VEHICLE_BASE_CHARGES[spot.category] || 0;
+  const billableHours = actualHours + (extraMinutes > 0 ? 1 : 0);
+  const spotFee = billableHours * hourlyRate;
+
+  const allottedMinutes = Number(spot.allottedHours || 0) * 60;
+  const actualMinutes = actualHours * 60 + extraMinutes;
+  const overtimeMinutes = Math.max(0, actualMinutes - allottedMinutes);
+
+  let overtimeFine = 0;
+  if (overtimeMinutes > 0) {
+    const tenMinuteBlocks = Math.ceil(overtimeMinutes / 10);
+    overtimeFine += tenMinuteBlocks * (0.5 * hourlyRate);
+
+    if (overtimeMinutes > 60) {
+      overtimeFine += 0.5 * vehicleBaseCharge;
+    }
+  }
+
+  const totalFee = spotFee + vehicleBaseCharge + overtimeFine;
+
+  return {
+    hourlyRate,
+    billableHours,
+    spotFee,
+    vehicleBaseCharge,
+    overtimeMinutes,
+    overtimeFine,
+    totalFee,
+  };
 }
 
 function parkVehicle() {
@@ -232,20 +307,38 @@ function calculateFee() {
     setStatus("exit-status", `Spot ${spotId} is not occupied.`, "error");
     return;
   }
+  if (h === 0 && m === 0) {
+    setStatus(
+      "exit-status",
+      "Parking duration must be greater than 0.",
+      "error",
+    );
+    return;
+  }
 
-  const totalHours = h + m / 60;
-  const amount = Math.ceil(totalHours * PRICING[spot.type]);
+  const bill = calculateBilling(spot, h, m);
+  if (!bill) {
+    setStatus(
+      "exit-status",
+      "Could not calculate bill for this spot.",
+      "error",
+    );
+    return;
+  }
 
   const details = [
     `Vehicle: ${spot.vehicleNo}`,
     `Spot ID: ${spot.id}`,
-    `Spot Type: ${titleCase(spot.type)} (${formatINR(PRICING[spot.type])}/hour)`,
-    `Duration: ${h}h ${m}m (${totalHours.toFixed(2)}h)`,
-    `Total Payable: ${formatINR(amount)}`,
+    `Spot Type: ${titleCase(spot.type)} (${formatINR(bill.hourlyRate)}/hour)`,
+    `Duration: ${h}h ${m}m | Billable: ${bill.billableHours}h`,
+    `Parking Charge: ${formatINR(bill.spotFee)}`,
+    `Vehicle Base Charge: ${formatINR(bill.vehicleBaseCharge)}`,
+    `Overtime Fine (${bill.overtimeMinutes} min): ${formatINR(bill.overtimeFine)}`,
+    `Total Payable: ${formatINR(bill.totalFee)}`,
   ].join("\n");
 
   setText("billing-details", details);
-  setText("exit-fee", formatINR(amount));
+  setText("exit-fee", formatINR(bill.totalFee));
 }
 
 function processExit() {
@@ -271,14 +364,29 @@ function processExit() {
     setStatus("exit-status", "Enter valid duration values.", "error");
     return;
   }
-
-  const totalHours = h + m / 60;
-  const amount = Math.ceil(totalHours * PRICING[spot.type]);
-
-  if (paid < amount) {
+  if (h === 0 && m === 0) {
     setStatus(
       "exit-status",
-      `Insufficient payment. Need ${formatINR(amount)}.`,
+      "Parking duration must be greater than 0.",
+      "error",
+    );
+    return;
+  }
+
+  const bill = calculateBilling(spot, h, m);
+  if (!bill) {
+    setStatus(
+      "exit-status",
+      "Could not process billing for this spot.",
+      "error",
+    );
+    return;
+  }
+
+  if (paid < bill.totalFee) {
+    setStatus(
+      "exit-status",
+      `Insufficient payment. Need ${formatINR(bill.totalFee)}.`,
       "error",
     );
     return;
@@ -293,15 +401,15 @@ function processExit() {
     spotId,
     vehicleNo,
     category,
-    duration: Number(totalHours.toFixed(2)),
-    amount,
+    duration: `${h}h ${m}m`,
+    amount: bill.totalFee,
   });
-  state.totalRevenue += amount;
+  state.totalRevenue += bill.totalFee;
 
-  const change = paid - amount;
+  const change = paid - bill.totalFee;
   setStatus(
     "exit-status",
-    `Exit complete. Amount ${formatINR(amount)} | Change ${formatINR(change)}.`,
+    `Exit complete. Amount ${formatINR(bill.totalFee)} | Change ${formatINR(change)}.`,
     "success",
   );
 
@@ -443,14 +551,6 @@ function renderTransactions() {
     : state.transactions.filter((t) => t.type === filter);
 
   body.innerHTML = "";
-  if (rows.length === 0) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="7" class="text-center">No transactions yet.</td>`;
-    body.appendChild(tr);
-    updateTransactionSummary(rows);
-    return;
-  }
-
   rows
     .slice()
     .reverse()
@@ -475,7 +575,6 @@ function updateTransactionSummary(rows) {
   const total = rows.length;
   const revenue = rows.reduce((sum, row) => sum + (row.amount || 0), 0);
   const avg = total ? revenue / total : 0;
-  const peakHours = total ? "10:00 AM - 12:00 PM" : "N/A";
   const summary = document.querySelector(".summary-info");
   if (!summary) {
     return;
@@ -484,7 +583,7 @@ function updateTransactionSummary(rows) {
     `Total Transactions: <strong>${total}</strong> | ` +
     `Total Revenue: <strong>${formatINR(revenue)}</strong> | ` +
     `Average Transaction: <strong>${formatINR(avg)}</strong> | ` +
-    `Peak Hours: <strong>${peakHours}</strong>`;
+    `Peak Hours: <strong>10:00 AM - 12:00 PM</strong>`;
 }
 
 function filterTransactions() {
@@ -558,7 +657,16 @@ function addTransaction({
 }
 
 function findAvailableSpot(type) {
-  return state.spots.find((s) => s.type === type && !s.occupied);
+  const availableSpots = state.spots.filter(
+    (s) => s.type === type && !s.occupied,
+  );
+
+  if (availableSpots.length === 0) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * availableSpots.length);
+  return availableSpots[randomIndex];
 }
 
 function findVehicleSpot(vehicleNo) {
