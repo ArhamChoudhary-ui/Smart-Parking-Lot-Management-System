@@ -1,0 +1,79 @@
+ParkingSpot constructor called for spot 1
+StandardSpot constructor called for spot 1
+ParkingSpot constructor called for spot 2
+StandardSpot constructor called for spot 2
+ParkingSpot constructor called for spot 3
+StandardSpot constructor called for spot 3
+ParkingSpot constructor called for spot 4
+StandardSpot constructor called for spot 4
+ParkingSpot constructor called for spot 5
+DisabledSpot constructor called for spot 5
+ParkingSpot constructor called for spot 6
+DisabledSpot constructor called for spot 6
+ParkingSpot constructor called for spot 7
+VIPSpot constructor called for spot 7
+ParkingSpot constructor called for spot 8
+VIPSpot constructor called for spot 8
+ParkingLot constructor called. Total spots created: 8
+
+===== SMART PARKING LOT MENU =====
+1. Park Vehicle
+2. Exit Vehicle
+3. View Lot Status
+4. View Summary
+5. View Transaction Log
+6. Exit
+Enter choice: Select Spot Type (1-Standard, 2-Disabled, 3-VIP): Enter Vehicle Number: Enter Vehicle Category (2W/4W): Enter Allotted Hours: Vehicle parked successfully at Spot ID 7
+
+===== SMART PARKING LOT MENU =====
+1. Park Vehicle
+2. Exit Vehicle
+3. View Lot Status
+4. View Summary
+5. View Transaction Log
+6. Exit
+Enter choice: Enter Spot ID: Enter Actual Hours Used: Enter Extra Minutes (0-59): Total Fee = 150.00
+Enter Paid Amount: 
+========== RECEIPT ==========
+Time          : 2026-04-13 21:01:11
+Spot ID       : 7
+Spot Type     : VIP
+Vehicle       : VIP-001
+Category      : 4W
+Allowed Time  : 2 hours
+Used Time     : 2h 0m
+Overtime      : 0 minutes
+
+Spot Charge   : 100.00
+Vehicle Charge: 50.00
+Overtime Fine : 0.00
+Total Fee     : 150.00
+Paid Amount   : 250.00
+Change        : 100.00
+Payment successful. Vehicle exited.
+
+===== SMART PARKING LOT MENU =====
+1. Park Vehicle
+2. Exit Vehicle
+3. View Lot Status
+4. View Summary
+5. View Transaction Log
+6. Exit
+Enter choice: Exiting program...
+StandardSpot destructor called for spot 1
+ParkingSpot destructor called for spot 1
+StandardSpot destructor called for spot 2
+ParkingSpot destructor called for spot 2
+StandardSpot destructor called for spot 3
+ParkingSpot destructor called for spot 3
+StandardSpot destructor called for spot 4
+ParkingSpot destructor called for spot 4
+DisabledSpot destructor called for spot 5
+ParkingSpot destructor called for spot 5
+DisabledSpot destructor called for spot 6
+ParkingSpot destructor called for spot 6
+VIPSpot destructor called for spot 7
+ParkingSpot destructor called for spot 7
+VIPSpot destructor called for spot 8
+ParkingSpot destructor called for spot 8
+ParkingLot destructor called

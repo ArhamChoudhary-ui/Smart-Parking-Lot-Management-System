@@ -1,0 +1,19 @@
+[2026-04-04 17:57:00] PARK | SpotID=1 | Type=Standard | Vehicle=AB1234
+[2026-04-04 17:57:00] EXIT | SpotID=1 | Type=Standard | Vehicle=AB1234 | Hours=2 | Fee=40.000000
+[2026-04-04 18:02:22] PARK | SpotID=5 | Type=Disabled | Vehicle=2025
+[2026-04-04 18:05:29] PARK | SpotID=1 | Type=Standard | Vehicle=2025
+[2026-04-04 18:09:15] PARK | SpotID=1 | Type=Standard | Vehicle=DL9CAR
+[2026-04-04 18:09:15] EXIT | SpotID=1 | Type=Standard | Vehicle=DL9CAR | Hours=3 | Fee=60.000000
+[2026-04-04 18:09:15] PAYMENT | SpotID=1 | Vehicle=DL9CAR | Paid=200.000000 | Change=140.000000
+[2026-04-04 18:09:30] PARK | SpotID=1 | Type=Standard | Vehicle=20
+[2026-04-04 18:13:33] PARK | SpotID=1 | Type=Standard | Vehicle=MH12AB1234 | Category=4W | AllottedHours=2
+[2026-04-04 18:13:53] PARK | SpotID=1 | Type=Standard | Vehicle=MH12AB1234 | Category=4W | AllottedHours=2
+[2026-04-04 18:13:53] EXIT | SpotID=1 | Type=Standard | Vehicle=MH12AB1234 | Category=4W | AllottedHours=2 | ActualHours=3 | ExtraMinutes=15 | OvertimeMinutes=75 | SpotFee=80.000000 | VehicleBase=50.000000 | OvertimeFine=105.000000 | TotalFee=235.000000
+[2026-04-04 18:13:53] PAYMENT | SpotID=1 | Vehicle=MH12AB1234 | Paid=300.000000 | Change=65.000000
+[2026-04-04 18:14:23] PARK | SpotID=1 | Type=Standard | Vehicle=2025 | Category=2W | AllottedHours=2
+[2026-04-04 18:15:10] EXIT | SpotID=1 | Type=Standard | Vehicle=2025 | Category=2W | AllottedHours=2 | ActualHours=4 | ExtraMinutes=10 | OvertimeMinutes=130 | SpotFee=100.000000 | VehicleBase=20.000000 | OvertimeFine=140.000000 | TotalFee=260.000000
+[2026-04-04 18:15:10] PAYMENT | SpotID=1 | Vehicle=2025 | Paid=260.000000 | Change=0.000000
+[2026-04-04 18:17:43] PARK   Spot 1   Vehicle: MH12AB1234   Category: 4W   Allotted: 2 hrs
+[2026-04-04 18:17:43] EXIT   Spot 1   Vehicle: MH12AB1234   Used: 3h 15m   Base: 50.000000   Fine: 105.000000   Total: 155.000000
+[2026-04-04 18:18:14] PARK   Spot 7   Vehicle: RJ14CW7238   Category: 4W   Allotted: 2 hrs
+[2026-04-04 18:18:54] EXIT   Spot 7   Vehicle: RJ14CW7238   Used: 5h 0m   Base: 50.000000   Fine: 475.000000   Total: 525.000000

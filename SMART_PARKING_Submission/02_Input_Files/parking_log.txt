@@ -1,0 +1,2 @@
+[2026-04-13 21:01:11] PARK   Spot 7   Vehicle: VIP-001   Category: 4W   Allotted: 2 hrs
+[2026-04-13 21:01:11] EXIT   Spot 7   Vehicle: VIP-001   Used: 2h 0m   SpotFee: 100.000000   Base: 50.000000   Fine: 0.000000   Total: 150.000000
